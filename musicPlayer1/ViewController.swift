@@ -25,7 +25,7 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
     var musicFile : [String] = ["music_1", "music_", "music_2"]
     var musicName : [String] = ["Shawn_Mendes_-_Stitches", "Charlie_Puth_-_We don't talk anymore", "Bruno_Mars_-_Marry You"]
     var musicImg: [String] = ["Stitches.jpg", "charlie.jpg", "marry.jpg"]
-    
+    var curVolume: Float = 0
     var random = Int(arc4random_uniform(3))
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -56,7 +56,6 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
     
     @IBAction func prevTrackBtn(_ sender: UIButton) {
         var cur_id = musicName.index(of: songNameLabel.text!)!
-        print("cur_id = \(cur_id)")
         if cur_id == 0 {
             cur_id = 2
         } else {
@@ -67,7 +66,6 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
     
     @IBAction func nextTrackBtn(_ sender: UIButton) {
         var cur_id = musicName.index(of: songNameLabel.text!)!
-        print("cur_id = \(cur_id)")
         if cur_id == 2 {
             cur_id = 0
         } else {
@@ -85,6 +83,7 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
             audio.pause()
             btn_play.setImage(UIImage(named: "play.png"), for: UIControlState())
         }
+        isPlaying = !isPlaying
     }
     
     @IBAction func action_repeat(_ sender: UISwitch) {
@@ -96,6 +95,7 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
     }
     @IBAction func action_sliderVol(_ sender: UISlider) {
         audio.volume = sender.value
+        curVolume = audio.volume
     }
     
     @IBAction func action_sliderTime(_ sender: UISlider) {
@@ -109,7 +109,11 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
         audio = try! AVAudioPlayer(contentsOf: URL(fileURLWithPath: Bundle.main.path(forResource: musicFile[index], ofType: "mp3")!))
         songImgLabel.image = UIImage(named: musicImg[index])
         songNameLabel.text = musicName[index]
-        self.btn_play.setImage(UIImage(named: "play.png"), for: UIControlState())
+        audio.volume = curVolume
+        if !isPlaying {
+            self.btn_play.setImage(UIImage(named: "play.png"), for: UIControlState())
+            isPlaying = !isPlaying
+        }
     }
     func convertTime(time: Float, lbl: UILabel) {
         let minu: Int = Int(time / 60)
